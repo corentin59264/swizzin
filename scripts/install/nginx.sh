@@ -206,7 +206,11 @@ echo_progress_done "Config installed"
 
 echo_progress_start "Installing fancyindex"
 git clone https://github.com/Naereen/Nginx-Fancyindex-Theme/ /tmp/fancyindex >> $log 2>&1
-mv /tmp/fancyindex/Nginx-Fancyindex-Theme-dark /srv/fancyindex >> $log 2>&1
+if [[ ! -d /tmp/fancyindex/Nginx-Fancyindex ]]; then
+    echo_error "Fancyindex theme was not found in the upstream repository"
+    exit 1
+fi
+mv /tmp/fancyindex/Nginx-Fancyindex /srv/fancyindex >> $log 2>&1
 rm -rf /tmp/fancyindex
 
 cat > /etc/nginx/snippets/fancyindex.conf << FIC
