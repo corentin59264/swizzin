@@ -4,16 +4,27 @@
 
 # 3.15.0 Stable
 
+This fork of [swizzin/swizzin](https://github.com/swizzin/swizzin) is maintained by **Corentin Lecerf, France**.
+
+Debian 13 (Trixie) is supported in addition to every distribution already supported upstream. Existing installations, the `box` command, and the installable applications keep their previous behaviour on those distributions.
+
 [website](https://swizzin.ltd) \| [docs](https://swizzin.ltd/getting-started) \| [discord](https://discord.gg/bDFqAUF)
 
 Please use [Discord](https://discord.gg/bDFqAUF) for all community functions, and [GitHub discussions](https://github.com/swizzin/swizzin/discussions) for feature requests and to raise issues.
 
 ## What is swizzin?
-Swizzin is a light, modular seedbox solution that can be installed on Debian 11/12 or Ubuntu 20.04/22.04/24.04. The QuickBox package repo has been ported over for your installing pleasure, including the panel -- if you so choose!
+Swizzin is a light, modular seedbox solution that can be installed on Debian 11/12/13 or Ubuntu 20.04/22.04/24.04. The QuickBox package repo has been ported over for your installing pleasure, including the panel -- if you so choose!
 
 Box has been revamped to reduce and consolidate the amount of commands you need to remember to manage your seedbox. More on this below. In addition to that, additional add-on packages can be installed during installation. No need to wait until the installer finishes! Now with unattended installs!
 
 ## Installation
+Install this fork as root. `setup.sh` clones `corentin59264/swizzin`, so later `box update` runs stay on the fork:
+
+```bash
+git clone https://github.com/corentin59264/swizzin.git
+bash swizzin/setup.sh
+```
+
 You can either use the quick installation method (recommended) or you can wile out with installations options using the advanced setup.
 ### Quick Start
 Just paste this in your terminal as root and go! This will ask you all the necessary questions to get you set up. Use your arrow keys, tab (to go to next field), space (to select) and enter (to confirm) to navigate the interactive boxes.
@@ -70,7 +81,7 @@ bash <(curl -sL git.io/swizzin) --env /path/to/your/env/file/here.env
 
 Long-term support branches only:
 
--   Debian 11/12
+-   Debian 11/12/13
 -   Ubuntu 20.04/22.04/24.04
 
 ## Support and Help
