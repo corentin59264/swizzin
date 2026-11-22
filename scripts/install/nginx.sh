@@ -63,7 +63,12 @@ touch $templog
 openssl dhparam -out dhparam.pem 2048 >> $templog 2>&1 &
 
 # Install packages for nginx in the foreground
-APT="nginx libnginx-mod-http-fancyindex subversion ssl-cert php-fpm libfcgi0ldbl php-cli php-dev php-xml php-curl php-xmlrpc php-json php-mbstring php-opcache php-zip ${geoip} ${mcrypt}"
+# Debian 13 renamed libfcgi0ldbl to libfcgi0t64. Older releases keep the previous name.
+fcgi_pkg="libfcgi0ldbl"
+if [[ $codename == "trixie" ]]; then
+    fcgi_pkg="libfcgi0t64"
+fi
+APT="nginx libnginx-mod-http-fancyindex subversion ssl-cert php-fpm ${fcgi_pkg} php-cli php-dev php-xml php-curl php-xmlrpc php-json php-mbstring php-opcache php-zip ${geoip} ${mcrypt}"
 apt_install $APT
 
 # Wait for the background task of openssl dhparm generation to finish
