@@ -110,6 +110,8 @@ else
     . /etc/swizzin/sources/functions/php
     phpversion=$(php_service_version)
     sock="php${phpversion}-fpm"
+    # php-fpm was already running for nginx and does not see modules installed above until it is restarted.
+    restart_php_fpm
 
     cat > /etc/nginx/apps/nextcloud.conf << EOF
 # The following 2 rules are only needed for the user_webfinger app.
