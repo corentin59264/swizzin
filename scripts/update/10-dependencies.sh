@@ -1,8 +1,12 @@
 #!/bin/bash
 # Ensures that dependencies are installed and corrects them if that is not the case.
 
-if ! which add-apt-repository > /dev/null; then
-    apt_install software-properties-common # Ubuntu may require universe/mutliverse enabled for certain packages so we must ensure repos are enabled before deps are attempted to installed
+# Debian 13 dropped software-properties-common. Every older supported release still
+# needs apt-add-repository before universe/contrib can be enabled.
+if [[ $(_os_codename) != "trixie" ]]; then
+    if ! which add-apt-repository > /dev/null; then
+        apt_install software-properties-common # Ubuntu may require universe/mutliverse enabled for certain packages so we must ensure repos are enabled before deps are attempted to installed
+    fi
 fi
 
 if [[ $(_os_distro) == "ubuntu" ]]; then
@@ -50,13 +54,24 @@ if [[ $(_os_distro) == "ubuntu" ]]; then
 elif [[ $(_os_distro) == "debian" ]]; then
     listFile="/etc/apt/sources.list.d/debian.sources"
     if [[ -f ${listFile} ]]; then
-        components=(contrib non-free)
+        if [[ $(_os_codename) == "trixie" ]]; then
+            components=(contrib non-free non-free-firmware)
+        else
+            components=(contrib non-free)
+        fi
         tmpFile=$(mktemp)
         cp "$listFile" "$tmpFile"
         for component in "${components[@]}"; do
-            sed -i "/^Components:/ {
+            if [[ $(_os_codename) == "trixie" ]]; then
+                # "non-free" is a prefix of "non-free-firmware", so match the whole word.
+                sed -i -E "/^Components:/ {
+                    /[[:space:]]${component}([[:space:]]|\$)/! s/\$/ ${component}/
+                }" "$tmpFile"
+            else
+                sed -i "/^Components:/ {
             /$component/! s/$/ $component/
         }" "$tmpFile"
+            fi
         done
 
         if ! cmp -s "$listFile" "$tmpFile"; then
@@ -65,6 +80,20 @@ elif [[ $(_os_distro) == "debian" ]]; then
         else
             rm "$tmpFile"
         fi
+    elif [[ $(_os_codename) == "trixie" ]]; then
+        # Trixie has no apt-add-repository. Edit a classic sources.list in place when
+        # the image has not been converted to deb822.
+        for component in contrib non-free non-free-firmware; do
+            if [[ -f /etc/apt/sources.list ]] && ! grep -P "\\b${component}(\\s|\$)" /etc/apt/sources.list | grep -q -v '^#'; then
+                echo_info "Enabling ${component} repo"
+                sed -i -E "/^deb /{
+                    /debian/ {
+                        /[[:space:]]${component}([[:space:]]|\$)/! s/\$/ ${component}/
+                    }
+                }" /etc/apt/sources.list
+                trigger_apt_update=true
+            fi
+        done
     else
         if ! grep contrib /etc/apt/sources.list | grep -q -v '^#'; then
             echo_info "Enabling contrib repo"
