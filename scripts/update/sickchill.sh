@@ -83,6 +83,10 @@ if [[ -f /install/.sickchill.lock ]]; then
         sudo -u ${user} bash -c "cd /opt/sickchill; git pull" >> $log 2>&1
         # echo "Installing requirements.txt with pip ..."
         sudo -u ${user} bash -c "/opt/.venv/sickchill/bin/pip3 install -r /opt/sickchill/requirements.txt" >> $log 2>&1
+        sudo -u ${user} bash -c "/opt/.venv/sickchill/bin/pip3 install rarfile" >> $log 2>&1 || {
+            echo_error "SickChill could not install the rarfile module"
+            exit 1
+        }
 
         cat > /etc/systemd/system/sickchill.service << SCSD
 [Unit]
