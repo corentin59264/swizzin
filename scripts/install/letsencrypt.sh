@@ -68,13 +68,13 @@ if [[ ${cf} == yes ]]; then
 
     if [[ -z $LE_CF_ZONEEXISTS ]]; then
         if ask "Does the record for this subdomain already exist?"; then
-            main=yes
+            record=yes
         else
-            main=no
+            record=no
         fi
     else
-        [[ $LE_CF_ZONEEXISTS = "yes" ]] && zone=yes
-        [[ $LE_CF_ZONEEXISTS = "no" ]] && zone=no
+        [[ $LE_CF_ZONEEXISTS = "yes" ]] && record=yes
+        [[ $LE_CF_ZONEEXISTS = "no" ]] && record=no
     fi
 
     if [[ -z $LE_CF_API ]]; then
@@ -88,7 +88,7 @@ if [[ ${cf} == yes ]]; then
         echo_query "CF Email"
         read -e email
     else
-        api=$LE_CF_EMAIL
+        email=$LE_CF_EMAIL
     fi
 
     export CF_Key="${api}"
