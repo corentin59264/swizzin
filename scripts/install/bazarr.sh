@@ -35,7 +35,12 @@ _install() {
     esac
 
     if [[ $(_os_arch) =~ "arm" ]]; then
-        apt_install libxml2-dev libxslt1-dev python3-libxml2 python3-lxml unrar-free ffmpeg libatlas-base-dev
+        # Atlas left Debian 13. OpenBLAS is the packaged replacement, and only on Trixie.
+        blas_pkg="libatlas-base-dev"
+        if [[ $codename == "trixie" ]]; then
+            blas_pkg="libopenblas-dev"
+        fi
+        apt_install libxml2-dev libxslt1-dev python3-libxml2 python3-lxml unrar-free ffmpeg ${blas_pkg}
     fi
 
     echo_progress_start "Downloading bazarr source"
